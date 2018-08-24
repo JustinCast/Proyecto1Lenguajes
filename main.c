@@ -131,7 +131,7 @@ void printStage() {
         printf("Categoria: %s\n", actual -> category -> category_name);
         while(actualCategory != NULL) {
             struct Zone *actualZone = z_head;
-            printf("Zona: %c\n", actualCategory -> zone -> zone_type);
+            printf("Zona: %s\n", actualCategory -> zone -> zone_type);
             while(actualZone != NULL) {
                 struct Chair *actualChair = ch_head;
                 printf("Silla: %i\n", actualZone -> chair -> chair_number);
