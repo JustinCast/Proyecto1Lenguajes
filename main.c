@@ -10,7 +10,7 @@ struct Category {
 
 struct Zone {
     struct Zone *next;
-    char *zone_type;
+    char zone_type;
     struct Chair *chair;
 } *z_head;
 
@@ -60,19 +60,19 @@ void insertCategories() {
             // creacion de la zona
             struct Zone *zone = (struct Zone*) malloc(sizeof(struct Zone));
             zone -> next = NULL;
-            zone -> zone_type = (char*) malloc(1);
             switch (z) {
                 case 0:
-                    strcpy(zone -> zone_type, "A");
+                    zone -> zone_type = 'C';
+                    break;
+                case 1:
+                    zone -> zone_type = 'B';
                     break;
                 case 2:
-                    strcpy(zone -> zone_type, "B");
-                    break;
-                case 3:
-                    strcpy(zone -> zone_type, "C");
+                    zone -> zone_type = 'A';
                     break;
                 default:break;
             }
+
 
             // ciclo para creacion de sillas
             for(int ch = 1; ch < 21; ch++){
@@ -95,8 +95,9 @@ void insertCategories() {
                 }
             }
 
-            // apunta a la cabeza
             zone -> chair = ch_head;
+            ch_head = NULL;
+            // apunta a la cabeza
             if(z_head == NULL)
                 z_head = zone;
             else {
@@ -107,6 +108,7 @@ void insertCategories() {
 
         // apunta a la cabeza
         category -> zone = z_head;
+        z_head = NULL;
         if(c_head == NULL)
             c_head = category;
         else {
@@ -114,7 +116,8 @@ void insertCategories() {
             c_head = category;
         }
 
-        newNode -> category = category;
+        newNode -> category = c_head;
+        c_head = NULL;
         if(head == NULL)
             head = newNode;
         else {
@@ -126,21 +129,20 @@ void insertCategories() {
 
 void printStage() {
     struct Node *actual = head;
-    while(actual != NULL){
-        struct Category *actualCategory = c_head;
-        printf("Categoria: %s\n", actual -> category -> category_name);
-        while(actualCategory != NULL) {
-            struct Zone *actualZone = z_head;
-            printf("Zona: %s\n", actualCategory -> zone -> zone_type);
-            while(actualZone != NULL) {
-                struct Chair *actualChair = ch_head;
-                printf("Silla: %i\n", actualZone -> chair -> chair_number);
-                while(actualChair != NULL) {
-                    actualChair = actualChair -> next;
+    while(actual != NULL) {
+        while(actual -> category != NULL){
+            printf("Categoria: %s\n", actual -> category -> category_name);
+            while(actual -> category -> zone != NULL){
+                printf("ZONA: %c\n", actual -> category -> zone -> zone_type);
+
+                while(actual -> category -> zone -> chair != NULL){
+                    printf("Silla: %i\n", actual -> category -> zone -> chair -> chair_number);
+                    actual -> category -> zone -> chair = actual -> category -> zone -> chair -> next;
                 }
-                actualZone = actualZone -> next;
+                actual -> category -> zone = actual -> category -> zone -> next;
+
             }
-            actualCategory = actualCategory -> next;
+            actual -> category = actual -> category -> next;
         }
         actual = actual -> next;
     }
