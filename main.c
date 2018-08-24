@@ -38,6 +38,7 @@ void insertCategories() {
         struct Category *category = (struct Category*) malloc(sizeof(struct Category));
         category -> next = NULL;
         // necesario para asignar el nombre de la categoria
+        category -> category_name = (char*) malloc(1);
         switch (c) {
             case 0:
                 strcpy(category -> category_name, "Norte");
@@ -93,6 +94,8 @@ void insertCategories() {
                 }
             }
 
+            // apunta a la cabeza
+            zone -> chair = ch_head;
             if(z_head == NULL)
                 z_head = zone;
             else {
@@ -100,6 +103,9 @@ void insertCategories() {
                 z_head = zone;
             }
         }
+
+        // apunta a la cabeza
+        category -> zone = z_head;
         if(c_head == NULL)
             c_head = category;
         else {
@@ -107,6 +113,7 @@ void insertCategories() {
             c_head = category;
         }
 
+        newNode -> category = category;
         if(head == NULL)
             head = newNode;
         else {
@@ -116,7 +123,30 @@ void insertCategories() {
     }
 }
 
+void printStage() {
+    struct Node *actual = head;
+    while(actual != NULL){
+        struct Category *actualCategory = c_head;
+        printf("Categoria: %s\n", actual -> category -> category_name);
+        while(actualCategory != NULL) {
+            struct Zone *actualZone = z_head;
+            printf("Zona: %c\n", actualCategory -> zone -> zone_type);
+            while(actualZone != NULL) {
+                struct Chair *actualChair = ch_head;
+                printf("Silla: %i\n", actualZone -> chair -> chair_number);
+                while(actualChair != NULL) {
+                    actualChair = actualChair -> next;
+                }
+                actualZone = actualZone -> next;
+            }
+            actualCategory = actualCategory -> next;
+        }
+        actual = actual -> next;
+    }
+}
+
 int main() {
     insertCategories();
+    printStage();
     return 0;
 }
