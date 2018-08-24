@@ -10,7 +10,7 @@ struct Category {
 
 struct Zone {
     struct Zone *next;
-    char zone_type;
+    char *zone_type;
     struct Chair *chair;
 } *z_head;
 
@@ -60,15 +60,16 @@ void insertCategories() {
             // creacion de la zona
             struct Zone *zone = (struct Zone*) malloc(sizeof(struct Zone));
             zone -> next = NULL;
+            zone -> zone_type = (char*) malloc(1);
             switch (z) {
                 case 0:
-                    zone -> zone_type  = 'A';
+                    strcpy(zone -> zone_type, "A");
                     break;
                 case 2:
-                    zone -> zone_type  = 'B';
+                    strcpy(zone -> zone_type, "B");
                     break;
                 case 3:
-                    zone -> zone_type  = 'C';
+                    strcpy(zone -> zone_type, "C");
                     break;
                 default:break;
             }
