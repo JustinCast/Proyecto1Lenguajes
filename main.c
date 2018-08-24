@@ -27,7 +27,7 @@ struct Node {
 } *head;
 
 
-void insertCategories() {
+void insert_categories() {
     for(int c = 0; c < 4; c++){ // se insertan solamente 4 categorías
         // inicializacion del nodo
         struct Node *newNode = NULL;
@@ -127,7 +127,7 @@ void insertCategories() {
     }
 }
 
-void printStage() {
+void print_stage() {
     struct Node *actual = head;
     while(actual != NULL) {
         while(actual -> category != NULL){
@@ -148,8 +148,12 @@ void printStage() {
     }
 }
 
+void resolve_purchase_request() {
+
+}
+
 int main() {
-    insertCategories();
-    printStage();
+    insert_categories();
+    print_stage();
     return 0;
 }
