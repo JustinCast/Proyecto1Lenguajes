@@ -6,11 +6,14 @@ struct Category {
     struct Category *next;
     char *category_name;
     struct Zone *zone;
+    int available_spaces;
 } *c_head;
 
 struct Zone {
     struct Zone *next;
+    struct Zone *prev;
     char zone_type;
+    int is_full;
     struct Chair *chair;
 } *z_head;
 
@@ -37,6 +40,7 @@ void insert_categories() {
         // inicializacion de la categoría
         struct Category *category = (struct Category*) malloc(sizeof(struct Category));
         category -> next = NULL;
+        category -> available_spaces = 30;
         // necesario para asignar el nombre de la categoria
         category -> category_name = (char*) malloc(sizeof(char) * 12);
         switch (c) {
@@ -60,6 +64,8 @@ void insert_categories() {
             // creacion de la zona
             struct Zone *zone = (struct Zone*) malloc(sizeof(struct Zone));
             zone -> next = NULL;
+            zone -> prev = NULL;
+            zone -> is_full = 0;
             switch (z) {
                 case 0:
                     zone -> zone_type = 'C';
@@ -75,7 +81,7 @@ void insert_categories() {
 
 
             // ciclo para creacion de sillas
-            for(int ch = 1; ch < 21; ch++){
+            for(int ch = 10; ch > 0; ch--){
                 struct Chair *chair = (struct Chair*) malloc(sizeof(struct Chair));
                 chair -> next = NULL;
 
@@ -101,6 +107,7 @@ void insert_categories() {
             if(z_head == NULL)
                 z_head = zone;
             else {
+                z_head -> prev = zone;
                 zone -> next = z_head;
                 z_head = zone;
             }
@@ -148,15 +155,47 @@ void print_stage() {
     }
 }
 
-void resolve_purchase_request(char * category, int tickets) {
+int resolve_purchase_request(const char * category, int tickets) {
+    int flag = 0; // para indicar si se debe recorrer en reverso las sillas
     struct Node *iterator = head;
     while(iterator != NULL){
         while(iterator -> category != NULL){
-
+            if(iterator -> category -> category_name == category){
+                // el puntero esta ubicado en la categoria correcta
+                if(iterator -> category -> available_spaces < tickets)
+                    return 0;
+                goto CONTINUE;
+            }
             iterator -> category = iterator -> category -> next;
         }
         iterator = iterator -> next;
     }
+    CONTINUE:
+    while((iterator -> category -> zone != NULL) & (tickets > 0)) {
+        if(iterator -> category -> zone -> is_full == 1)
+            while(iterator -> category -> zone -> is_full == 1)
+                iterator -> category -> zone = iterator -> category -> zone -> next; // si la zona está llena se desplazará hasta encontrar una vacia
+        else {
+            while(iterator -> category -> zone -> chair != NULL){
+                if(flag == 1){
+                    goto REVERSE;
+                }
+                iterator -> category -> zone -> chair -> status = 1;
+                tickets--;
+                if(iterator -> category -> zone -> chair -> next == NULL){
+                    // si se acomodaron los tiquetes entonces se retorna
+                    if(tickets == 0)
+                        return 1;
+                    iterator -> category -> zone -> is_full = 1;
+                    flag = 1;
+                    goto CONTINUE;
+                }
+            }
+        }
+    }
+    // si quedaron tickets pendientes por asignar en la zona anterior, entonces la siguiente zona se recorrera en reverso para que permita logar una cercania
+    REVERSE:
+    return 0;
 }
 
 int main() {
