@@ -3,11 +3,11 @@
 #include <string.h>
 
 struct Category {
-    struct Category *next;
+    //struct Category *next;
     char *category_name;
     struct Zone *zone;
     int available_spaces;
-} *c_head;
+};
 
 struct Zone {
     struct Zone *next;
@@ -39,7 +39,6 @@ void insert_categories() {
 
         // inicializacion de la categoría
         struct Category *category = (struct Category*) malloc(sizeof(struct Category));
-        category -> next = NULL;
         category -> available_spaces = 30;
         // necesario para asignar el nombre de la categoria
         category -> category_name = (char*) malloc(sizeof(char) * 12);
@@ -60,7 +59,7 @@ void insert_categories() {
         }
 
         // ciclo para creacion de zonas
-        /*for(int z = 0; z < 3; z++){
+        for(int z = 0; z < 3; z++){
             // creacion de la zona
             struct Zone *zone = (struct Zone*) malloc(sizeof(struct Zone));
             zone -> next = NULL;
@@ -115,16 +114,9 @@ void insert_categories() {
 
         // apunta a la cabeza
         category -> zone = z_head;
-        z_head = NULL;*/
-        if(c_head == NULL)
-            c_head = category;
-        else {
-            category -> next = c_head;
-            c_head = category;
-        }
+        z_head = NULL;
 
-        newNode -> category = c_head;
-        c_head = NULL;
+        newNode -> category = category;
         if(head == NULL)
             head = newNode;
         else {
@@ -137,65 +129,54 @@ void insert_categories() {
 void print_stage() {
     struct Node *actual = head;
     while(actual != NULL) {
-        while(actual -> category != NULL){
-            printf("Categoria: %s\n", actual -> category -> category_name);
-            /*while(actual -> category -> zone != NULL){
-                printf("ZONA: %c\n", actual -> category -> zone -> zone_type);
+        printf("Categoria: %s\n", actual -> category -> category_name);
+        while(actual -> category -> zone != NULL){
+            printf("ZONA: %c\n", actual -> category -> zone -> zone_type);
 
-                while(actual -> category -> zone -> chair != NULL){
-                    printf("Silla: %i\n", actual -> category -> zone -> chair -> chair_number);
-                    printf("Fila silla: %i\n", actual -> category -> zone -> chair -> row_number);
-                    actual -> category -> zone -> chair = actual -> category -> zone -> chair -> next;
-                }
-                actual -> category -> zone = actual -> category -> zone -> next;
+            while(actual -> category -> zone -> chair != NULL){
+                printf("Silla: %i\n", actual -> category -> zone -> chair -> chair_number);
+                //printf("Fila silla: %i\n", actual -> category -> zone -> chair -> row_number);
+                actual -> category -> zone -> chair = actual -> category -> zone -> chair -> next;
+            }
+            actual -> category -> zone = actual -> category -> zone -> next;
 
-            }*/
-            actual -> category = actual -> category -> next;
         }
         actual = actual -> next;
     }
 }
 
 int resolve_purchase_request(char * category, int tickets) {
-    int flag = 0; // para indicar si se debe recorrer en reverso las sillas
     struct Node *iterator = head;
     while(iterator != NULL){
         if(strcmp(iterator -> category -> category_name, category) == 0){
             // el puntero esta ubicado en la categoria correcta
-            printf("Categoria ingresada: %s\n", category);
-            printf("Categoria encontrada: %s\n", iterator -> category -> category_name);
-            if(iterator -> category -> available_spaces < tickets)
+            if(iterator -> category -> available_spaces < tickets) {
+                printf("No se pudo procesar la compra debido a que la categoria se encuentra llena\n");
                 return 0;
-            //goto CONTINUE;
+            }
+            goto CONTINUE;
         }
         iterator = iterator -> next;
-    }
-    /*CONTINUE:
-    while((iterator -> category -> zone != NULL) & (tickets > 0)) {
+    } // zona revisada: funciona correctamente
+
+    CONTINUE:
+    while((iterator -> category -> zone != NULL) && (tickets > 0)) {
         if(iterator -> category -> zone -> is_full == 1)
             while(iterator -> category -> zone -> is_full == 1)
                 iterator -> category -> zone = iterator -> category -> zone -> next; // si la zona está llena se desplazará hasta encontrar una vacia
         else {
             while(iterator -> category -> zone -> chair != NULL){
-                if(flag == 1){
-                    goto REVERSE;
+                if(iterator -> category -> zone -> chair -> status == 0) {
+                    iterator -> category -> zone-> chair -> status = 1;
+                    iterator -> category -> available_spaces--;
+                    tickets--;
                 }
-                iterator -> category -> zone -> chair -> status = 1;
-                tickets--;
-                if(iterator -> category -> zone -> chair -> next == NULL){
-                    // si se acomodaron los tiquetes entonces se retorna
-                    if(tickets == 0)
-                        return 1;
-                    iterator -> category -> zone -> is_full = 1;
-                    flag = 1;
-                    goto CONTINUE;
-                }
+                iterator -> category -> zone -> chair = iterator -> category -> zone -> chair -> next;
             }
         }
     }
-    // si quedaron tickets pendientes por asignar en la zona anterior, entonces la siguiente zona se recorrera en reverso para que permita logar una cercania
-    REVERSE:*/
-    return 0;
+    printf("Compra procesada con exito!\n");
+    return 1;
 }
 
 int main() {
