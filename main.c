@@ -38,19 +38,19 @@ void insert_categories() {
         struct Category *category = (struct Category*) malloc(sizeof(struct Category));
         category -> next = NULL;
         // necesario para asignar el nombre de la categoria
-        category -> category_name = (char*) malloc(1);
+        category -> category_name = (char*) malloc(sizeof(char) * 12);
         switch (c) {
             case 0:
-                strcpy(category -> category_name, "Norte");
+                strcpy(category -> category_name, "Tribuna");
                 break;
             case 1:
-                strcpy(category -> category_name, "Sur");
+                strcpy(category -> category_name, "Platea Norte");
                 break;
             case 2:
-                strcpy(category -> category_name, "Este");
+                strcpy(category -> category_name, "Platea Sur");
                 break;
             case 3:
-                strcpy(category -> category_name, "Oeste");
+                strcpy(category -> category_name, "Platea");
                 break;
             default:break;
         }
@@ -148,8 +148,15 @@ void print_stage() {
     }
 }
 
-void resolve_purchase_request() {
+void resolve_purchase_request(char * category, int tickets) {
+    struct Node *iterator = head;
+    while(iterator != NULL){
+        while(iterator -> category != NULL){
 
+            iterator -> category = iterator -> category -> next;
+        }
+        iterator = iterator -> next;
+    }
 }
 
 int main() {
