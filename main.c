@@ -126,6 +126,14 @@ void insert_categories() {
     }
 }
 
+char *result_parser(char * category)
+{
+    char *c = category;
+    char *aux = (char*) malloc(sizeof(char));;
+    sprintf(aux, "%s%d", c, 10);
+    return aux;
+}
+
 void print_stage() {
     struct Node *actual = head;
     while(actual != NULL) {
@@ -180,10 +188,12 @@ int resolve_purchase_request(char * category, int tickets) {
 }
 
 int main() {
-    insert_categories();
+    /*insert_categories();
     //print_stage();
     char* stage = (char*) malloc(sizeof(char) * 12);
     strcpy(stage, "Platea");
-    resolve_purchase_request(stage, 10);
+    resolve_purchase_request(stage, 10);*/
+    char *salida = result_parser("Platea");
+    printf("%s", salida);
     return 0;
 }
