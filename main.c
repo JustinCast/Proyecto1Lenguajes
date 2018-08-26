@@ -126,12 +126,17 @@ void insert_categories() {
     }
 }
 
-char *result_parser(char * category)
+char *result_parser(char *pre, int chair)
 {
-    char *c = category;
-    char *aux = (char*) malloc(sizeof(char));;
-    sprintf(aux, "%s%d", c, 10);
-    return aux;
+    char *str = pre;
+    char c[4];
+    snprintf(c, 4, "%d", chair);
+
+    size_t len = strlen(str);
+    char *str2 = malloc(len + 1 + 1); /* one for extra char, one for trailing zero */
+    strcpy(str2, str);
+    str2[len] = *c;
+    return str2;
 }
 
 void print_stage() {
@@ -153,8 +158,10 @@ void print_stage() {
     }
 }
 
-int resolve_purchase_request(char * category, int tickets) {
+char *resolve_purchase_request(char * category, int tickets) {
     struct Node *iterator = head;
+    char *result = (char*) malloc(1);
+    char * aux = calloc(20, sizeof(char));
     while(iterator != NULL){
         if(strcmp(iterator -> category -> category_name, category) == 0){
             // el puntero esta ubicado en la categoria correcta
@@ -173,27 +180,30 @@ int resolve_purchase_request(char * category, int tickets) {
             while(iterator -> category -> zone -> is_full == 1)
                 iterator -> category -> zone = iterator -> category -> zone -> next; // si la zona está llena se desplazará hasta encontrar una vacia
         else {
-            while(iterator -> category -> zone -> chair != NULL){
+            while(iterator -> category -> zone -> chair != NULL && (tickets > 0)){
                 if(iterator -> category -> zone -> chair -> status == 0) {
                     iterator -> category -> zone-> chair -> status = 1;
                     iterator -> category -> available_spaces--;
                     tickets--;
+                    sprintf(result, "%d", iterator -> category -> zone-> chair -> chair_number);
+                    strcat(aux, result);
+
                 }
                 iterator -> category -> zone -> chair = iterator -> category -> zone -> chair -> next;
             }
         }
     }
     printf("Compra procesada con exito!\n");
-    return 1;
+    return aux;
 }
 
 int main() {
-    /*insert_categories();
+    insert_categories();
     //print_stage();
     char* stage = (char*) malloc(sizeof(char) * 12);
     strcpy(stage, "Platea");
-    resolve_purchase_request(stage, 10);*/
-    char *salida = result_parser("Platea");
-    printf("%s", salida);
+    printf("%s\n", resolve_purchase_request(stage, 10));
+    /*char *salida = result_parser("Platea");
+    printf("%s", salida);*/
     return 0;
 }
