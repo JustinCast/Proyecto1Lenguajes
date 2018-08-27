@@ -187,7 +187,8 @@ char *resolve_purchase_request(char * category, int tickets) {
                     tickets--;
                     sprintf(result, "%d", iterator -> category -> zone-> chair -> chair_number);
                     strcat(aux, result);
-
+                    sprintf(result, (const char *) "--");
+                    strcat(aux, result);
                 }
                 iterator -> category -> zone -> chair = iterator -> category -> zone -> chair -> next;
             }
@@ -202,7 +203,7 @@ int main() {
     //print_stage();
     char* stage = (char*) malloc(sizeof(char) * 12);
     strcpy(stage, "Platea");
-    printf("%s\n", resolve_purchase_request(stage, 10));
+    printf("%s\n", resolve_purchase_request(stage, 5));
     /*char *salida = result_parser("Platea");
     printf("%s", salida);*/
     return 0;
