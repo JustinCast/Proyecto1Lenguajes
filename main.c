@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
+#include <conio.h>
 
 struct Category {
     //struct Category *next;
@@ -158,7 +159,7 @@ void print_stage() {
     }
 }
 
-char *resolve_purchase_request(char * category, int tickets) {
+char *resolve_purchase_request(int tickets, char * category) {
     struct Node *iterator = head;
     char *result = (char*) malloc(1);
     char * aux = calloc(20, sizeof(char));
@@ -187,8 +188,8 @@ char *resolve_purchase_request(char * category, int tickets) {
                     tickets--;
                     sprintf(result, "%d", iterator -> category -> zone-> chair -> chair_number);
                     strcat(aux, result);
-                    sprintf(result, (const char *) "--");
-                    strcat(aux, result);
+                    //sprintf(result, (const char *) "--");
+                    //strcat(aux, result);
                 }
                 iterator -> category -> zone -> chair = iterator -> category -> zone -> chair -> next;
             }
@@ -198,13 +199,10 @@ char *resolve_purchase_request(char * category, int tickets) {
     return aux;
 }
 
-int main() {
+int main(int argc, char* category[]) {
     insert_categories();
-    //print_stage();
-    char* stage = (char*) malloc(sizeof(char) * 12);
-    strcpy(stage, "Platea");
-    printf("%s\n", resolve_purchase_request(stage, 5));
-    /*char *salida = result_parser("Platea");
-    printf("%s", salida);*/
+
+    resolve_purchase_request(atoi(category[0]), category[2]);
+    getch();
     return 0;
 }
