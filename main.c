@@ -45,7 +45,7 @@ void insert_categories() {
         // inicializacion de la categoría
         struct Category *category = (struct Category*) malloc(sizeof(struct Category));
         category -> available_spaces = 60;
-        category -> current_seat = 0;
+        category -> current_seat = 1;
         // necesario para asignar el nombre de la categoria
         category -> category_name = (char*) malloc(sizeof(char) * 12);
         switch (c) {
@@ -238,11 +238,10 @@ void resolve_purchase_request(int tickets, char * category) {
 int main(int argc, char* category[]) {
     insert_categories();
 
-    resolve_purchase_request(30, "Platea");
-    resolve_purchase_request(30, "Platea");
+    //resolve_purchase_request(30, "Platea");
+    //resolve_purchase_request(30, "Platea");
     //pre_filled(5, "Platea");
     //pre_filled(atoi[category[3], category[4]])
-    //resolve_purchase_request(atoi(category[1]), category[2]);
-    getch();
+    resolve_purchase_request(atoi(category[1]), category[2]);
     return 0;
 }
