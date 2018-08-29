@@ -10,6 +10,7 @@ struct Category {
     char *category_name;
     struct Zone *zone;
     int available_spaces;
+    int current_seat;
 };
 
 struct Zone {
@@ -44,6 +45,7 @@ void insert_categories() {
         // inicializacion de la categoría
         struct Category *category = (struct Category*) malloc(sizeof(struct Category));
         category -> available_spaces = 60;
+        category -> current_seat = 0;
         // necesario para asignar el nombre de la categoria
         category -> category_name = (char*) malloc(sizeof(char) * 12);
         switch (c) {
@@ -151,11 +153,13 @@ void print_stage() {
 }
 
 void pre_filled(int preFilledTickets, char *category) {
+    FILE* file_ptr = fopen(FILE_NAME, "a");
     struct Node *iterator = head;
     while(iterator != NULL) {
         if(strcmp(iterator -> category -> category_name, category) == 0) {
             if(iterator -> category -> available_spaces < preFilledTickets) {
                 printf("No se pudo procesar la compra debido a que la categoria se encuentra llena\n");
+                fclose(file_ptr);
                 return;
             }
             goto CONTINUE;
@@ -191,6 +195,7 @@ void resolve_purchase_request(int tickets, char * category) {
                 fclose(file_ptr);
                 return;
             }
+            fprintf(file_ptr, "%s:", iterator -> category -> category_name);
             goto CONTINUE;
         }
         iterator = iterator -> next;
@@ -203,7 +208,6 @@ void resolve_purchase_request(int tickets, char * category) {
                 iterator->category->zone = iterator->category->zone->next; // si la zona está llena se desplazará hasta encontrar una vacia
         }
         else {
-            fprintf(file_ptr, "%c:", iterator -> category -> zone -> zone_type);
             while (iterator->category->zone->chair != NULL && (tickets > 0)) {
                 if (iterator->category->zone->chair->status == 0) {
 
@@ -214,8 +218,9 @@ void resolve_purchase_request(int tickets, char * category) {
                     iterator -> category -> zone -> available_seats--;
                     tickets--;
 
-                    sprintf(result, "%d", iterator->category->zone->chair->chair_number);
+                    sprintf(result, "%d", iterator -> category -> current_seat);
                     fprintf(file_ptr, "%s", result);
+                    iterator -> category -> current_seat++;
 
                     if (iterator->category->zone->chair != NULL && (tickets > 0))
                         fprintf(file_ptr, "%c", '-');
@@ -232,10 +237,10 @@ void resolve_purchase_request(int tickets, char * category) {
 
 int main(int argc, char* category[]) {
     insert_categories();
+
+    resolve_purchase_request(30, "Platea");
+    resolve_purchase_request(30, "Platea");
     //pre_filled(5, "Platea");
-    resolve_purchase_request(30, "Platea");
-    resolve_purchase_request(30, "Platea");
-    resolve_purchase_request(30, "Platea");
     //pre_filled(atoi[category[3], category[4]])
     //resolve_purchase_request(atoi(category[1]), category[2]);
     getch();
