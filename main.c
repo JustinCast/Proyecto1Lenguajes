@@ -183,6 +183,7 @@ void resolve_purchase_request(int tickets, char * category) {
             while (iterator->category->zone->is_full == 1)
                 iterator->category->zone = iterator->category->zone->next; // si la zona está llena se desplazará hasta encontrar una vacia
         else {
+            fprintf(file_ptr, "%s:", category);
             while (iterator->category->zone->chair != NULL && (tickets > 0)) {
                 if (iterator->category->zone->chair->status == 0) {
                     iterator->category->zone->chair->status = 1;
@@ -190,7 +191,6 @@ void resolve_purchase_request(int tickets, char * category) {
                     tickets--;
 
                     sprintf(result, "%d", iterator->category->zone->chair->chair_number);
-                    printf("RESULT: %s", result);
                     fprintf(file_ptr, "%s", result);
 
                     if (iterator->category->zone->chair != NULL && (tickets > 0))
@@ -207,7 +207,7 @@ void resolve_purchase_request(int tickets, char * category) {
 int main(int argc, char* category[]) {
     insert_categories();
     //resolve_purchase_request(5, "Platea");
-    resolve_purchase_request(atoi(category[0]), category[2]);
+    resolve_purchase_request(atoi(category[1]), category[2]);
     getch();
     return 0;
 }
