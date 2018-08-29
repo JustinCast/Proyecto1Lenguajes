@@ -3,6 +3,8 @@
 #include <string.h>
 #include <conio.h>
 
+#define FILE_NAME "result.txt"
+
 struct Category {
     //struct Category *next;
     char *category_name;
@@ -159,16 +161,16 @@ void print_stage() {
     }
 }
 
-char *resolve_purchase_request(int tickets, char * category) {
+void resolve_purchase_request(int tickets, char * category) {
+    FILE* file_ptr = fopen(FILE_NAME, "a");
     struct Node *iterator = head;
     char *result = (char*) malloc(1);
-    char * aux = calloc(20, sizeof(char));
     while(iterator != NULL){
         if(strcmp(iterator -> category -> category_name, category) == 0){
             // el puntero esta ubicado en la categoria correcta
             if(iterator -> category -> available_spaces < tickets) {
                 printf("No se pudo procesar la compra debido a que la categoria se encuentra llena\n");
-                return 0;
+                return;
             }
             goto CONTINUE;
         }
@@ -177,31 +179,34 @@ char *resolve_purchase_request(int tickets, char * category) {
 
     CONTINUE:
     while((iterator -> category -> zone != NULL) && (tickets > 0)) {
-        if(iterator -> category -> zone -> is_full == 1)
-            while(iterator -> category -> zone -> is_full == 1)
-                iterator -> category -> zone = iterator -> category -> zone -> next; // si la zona está llena se desplazará hasta encontrar una vacia
+        if (iterator->category->zone->is_full == 1)
+            while (iterator->category->zone->is_full == 1)
+                iterator->category->zone = iterator->category->zone->next; // si la zona está llena se desplazará hasta encontrar una vacia
         else {
-            while(iterator -> category -> zone -> chair != NULL && (tickets > 0)){
-                if(iterator -> category -> zone -> chair -> status == 0) {
-                    iterator -> category -> zone-> chair -> status = 1;
-                    iterator -> category -> available_spaces--;
+            while (iterator->category->zone->chair != NULL && (tickets > 0)) {
+                if (iterator->category->zone->chair->status == 0) {
+                    iterator->category->zone->chair->status = 1;
+                    iterator->category->available_spaces--;
                     tickets--;
-                    sprintf(result, "%d", iterator -> category -> zone-> chair -> chair_number);
-                    strcat(aux, result);
-                    //sprintf(result, (const char *) "--");
-                    //strcat(aux, result);
+
+                    sprintf(result, "%d", iterator->category->zone->chair->chair_number);
+                    printf("RESULT: %s", result);
+                    fprintf(file_ptr, "%s", result);
+
+                    if (iterator->category->zone->chair != NULL && (tickets > 0))
+                        fprintf(file_ptr, "%c", '-');
+                    iterator->category->zone->chair = iterator->category->zone->chair->next;
                 }
-                iterator -> category -> zone -> chair = iterator -> category -> zone -> chair -> next;
             }
         }
     }
-    printf("Compra procesada con exito!\n");
-    return aux;
+    fprintf(file_ptr, "\n");
+    fclose(file_ptr);
 }
 
 int main(int argc, char* category[]) {
     insert_categories();
-
+    //resolve_purchase_request(5, "Platea");
     resolve_purchase_request(atoi(category[0]), category[2]);
     getch();
     return 0;
