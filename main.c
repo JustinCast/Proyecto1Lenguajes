@@ -129,19 +129,6 @@ void insert_categories() {
     }
 }
 
-char *result_parser(char *pre, int chair)
-{
-    char *str = pre;
-    char c[4];
-    snprintf(c, 4, "%d", chair);
-
-    size_t len = strlen(str);
-    char *str2 = malloc(len + 1 + 1); /* one for extra char, one for trailing zero */
-    strcpy(str2, str);
-    str2[len] = *c;
-    return str2;
-}
-
 void print_stage() {
     struct Node *actual = head;
     while(actual != NULL) {
@@ -158,6 +145,36 @@ void print_stage() {
 
         }
         actual = actual -> next;
+    }
+}
+
+void pre_filled(int preFilledTickets, char *category) {
+    struct Node *iterator = head;
+    while(iterator != NULL) {
+        if(strcmp(iterator -> category -> category_name, category) == 0) {
+            if(iterator -> category -> available_spaces < preFilledTickets) {
+                printf("No se pudo procesar la compra debido a que la categoria se encuentra llena\n");
+                return;
+            }
+            goto CONTINUE;
+        }
+        iterator = iterator -> next;
+    }
+    CONTINUE:
+    while((iterator -> category -> zone != NULL) && (preFilledTickets > 0)){
+        if(iterator -> category -> zone -> is_full == 1)
+            while(iterator -> category -> zone -> is_full == 1)
+                iterator-> category -> zone = iterator -> category -> zone -> next;
+        else
+            while (iterator->category->zone->chair != NULL && (preFilledTickets > 0))
+                if (iterator->category->zone->chair->status == 0) {
+                    iterator->category->zone->chair->status = 1;
+                    printf("Silla: %i\n", iterator->category->zone->chair->chair_number);
+                    iterator->category->available_spaces--;
+                    iterator->category->available_spaces--;
+                    preFilledTickets--;
+                    iterator->category->zone->chair = iterator->category->zone->chair->next;
+                }
     }
 }
 
@@ -187,6 +204,7 @@ void resolve_purchase_request(int tickets, char * category) {
             while (iterator->category->zone->chair != NULL && (tickets > 0)) {
                 if (iterator->category->zone->chair->status == 0) {
                     iterator->category->zone->chair->status = 1;
+                    printf("Silla: %i\n", iterator->category->zone->chair->chair_number);
                     iterator->category->available_spaces--;
                     tickets--;
 
@@ -206,8 +224,10 @@ void resolve_purchase_request(int tickets, char * category) {
 
 int main(int argc, char* category[]) {
     insert_categories();
-    //resolve_purchase_request(5, "Platea");
-    resolve_purchase_request(atoi(category[1]), category[2]);
+    pre_filled(5, "Platea");
+    resolve_purchase_request(30, "Platea");
+    //pre_filled(atoi[category[3], category[4]])
+    //resolve_purchase_request(atoi(category[1]), category[2]);
     getch();
     return 0;
 }
