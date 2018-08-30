@@ -53,10 +53,10 @@ void insert_categories() {
                 strcpy(category -> category_name, "Tribuna");
                 break;
             case 1:
-                strcpy(category -> category_name, "Platea Norte");
+                strcpy(category -> category_name, "Norte");
                 break;
             case 2:
-                strcpy(category -> category_name, "Platea Sur");
+                strcpy(category -> category_name, "Sur");
                 break;
             case 3:
                 strcpy(category -> category_name, "Platea");
@@ -133,56 +133,6 @@ void insert_categories() {
     }
 }
 
-void print_stage() {
-    struct Node *actual = head;
-    while(actual != NULL) {
-        printf("Categoria: %s\n", actual -> category -> category_name);
-        while(actual -> category -> zone != NULL){
-            printf("ZONA: %c\n", actual -> category -> zone -> zone_type);
-
-            while(actual -> category -> zone -> chair != NULL){
-                printf("Silla: %i\n", actual -> category -> zone -> chair -> chair_number);
-                //printf("Fila silla: %i\n", actual -> category -> zone -> chair -> row_number);
-                actual -> category -> zone -> chair = actual -> category -> zone -> chair -> next;
-            }
-            actual -> category -> zone = actual -> category -> zone -> next;
-
-        }
-        actual = actual -> next;
-    }
-}
-
-void pre_filled(int preFilledTickets, char *category) {
-    FILE* file_ptr = fopen(FILE_NAME, "a");
-    struct Node *iterator = head;
-    while(iterator != NULL) {
-        if(strcmp(iterator -> category -> category_name, category) == 0) {
-            if(iterator -> category -> available_spaces < preFilledTickets) {
-                printf("No se pudo procesar la compra debido a que la categoria se encuentra llena\n");
-                fclose(file_ptr);
-                return;
-            }
-            goto CONTINUE;
-        }
-        iterator = iterator -> next;
-    }
-    CONTINUE:
-    while((iterator -> category -> zone != NULL) && (preFilledTickets > 0)){
-        if(iterator -> category -> zone -> is_full == 1)
-            while(iterator -> category -> zone -> is_full == 1)
-                iterator-> category -> zone = iterator -> category -> zone -> next;
-        else
-            while (iterator->category->zone->chair != NULL && (preFilledTickets > 0))
-                if (iterator->category->zone->chair->status == 0) {
-                    iterator->category->zone->chair->status = 1;
-                    printf("Silla: %i\n", iterator->category->zone->chair->chair_number);
-                    iterator->category->available_spaces--;
-                    preFilledTickets--;
-                    iterator->category->zone->chair = iterator->category->zone->chair->next;
-                }
-    }
-}
-
 void resolve_purchase_request(int tickets, char * category) {
     FILE* file_ptr = fopen(FILE_NAME, "a");
     struct Node *iterator = head;
@@ -237,11 +187,7 @@ void resolve_purchase_request(int tickets, char * category) {
 
 int main(int argc, char* category[]) {
     insert_categories();
-
-    //resolve_purchase_request(30, "Platea");
-    //resolve_purchase_request(30, "Platea");
-    //pre_filled(5, "Platea");
-    //pre_filled(atoi[category[3], category[4]])
+    resolve_purchase_request(atoi(category[3]), category[4]);
     resolve_purchase_request(atoi(category[1]), category[2]);
     return 0;
 }
